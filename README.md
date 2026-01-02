@@ -34,8 +34,10 @@ Use the makefile to interact with the platform:
 - `make logs JOB=<id>`: View the output of a job. The id is shown when submitting a job.
 
 ## Quick Start
+This project uses `uv` for dependency management.
 
 ```
+uv sync
 make up
 make submit PROCESS=processing/mean.py DATA=data/numbers.csv
 ```
