@@ -23,9 +23,9 @@ if len(sys.argv) != 2:
 
 job_id = sys.argv[1]
 
-key_path    = f"jobs/job_{job_id}.key"
-proc_path   = f"jobs/job_{job_id}.py.enc"
-data_path   = f"data/job_{job_id}.csv.enc"
+key_path    = f"jobs_encrypted/job_{job_id}.key"
+proc_path   = f"jobs_encrypted/job_{job_id}.py.enc"
+data_path   = f"data_encrypted/job_{job_id}.csv.enc"
 out_path    = f"output/job_{job_id}.out.enc"
 
 key = open(key_path, "rb").read()
