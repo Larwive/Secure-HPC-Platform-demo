@@ -1,0 +1,19 @@
+services:
+  login:
+    image: ruby:3.2
+    volumes:
+      - .:/app
+      - ./jobs:/jobs
+      - ./data:/data
+    working_dir: /app
+    entrypoint: ["ruby", "bin/submit_job.rb"]
+
+  secure-compute:
+    image: python:3.12
+    volumes:
+      - ./jobs:/jobs
+      - ./data:/data
+      - ./output:/output
+      - ./processing:/processing
+    working_dir: /processing
+    command: ["python", "worker.py"]
