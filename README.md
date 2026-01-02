@@ -33,3 +33,10 @@ Use the makefile to interact with the platform:
 - `make submit PROCESS=... DATA=...`: Submit a job where the process is an allowed Python script.
 - `make logs JOB=<id>`: View the output of a job. The id is shown when submitting a job.
 
+## Quick Start
+
+```
+make up
+make submit PROCESS=processing/mean.py DATA=data/numbers.csv
+```
+Then you can view the output with `make logs JOB=<id>`.
