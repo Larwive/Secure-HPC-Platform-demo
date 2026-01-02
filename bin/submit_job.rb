@@ -31,15 +31,15 @@ FileUtils.mkdir_p("jobs")
 job_id = SecureRandom.uuid
 key = SecureRandom.random_bytes(32)
 
-File.write("jobs/job_#{job_id}.py.enc",
+File.write("jobs_encrypted/job_#{job_id}.py.enc",
   encrypt(File.read(process_file), key)
 )
 
-File.write("data/job_#{job_id}.csv.enc",
+File.write("data_encrypted/job_#{job_id}.csv.enc",
   encrypt(File.read(data_file), key)
 )
 
-File.binwrite("jobs/job_#{job_id}.key", key)
+File.binwrite("jobs_encrypted/job_#{job_id}.key", key)
 
 puts "[INFO] Job submitted"
 puts "  ID: #{job_id}"

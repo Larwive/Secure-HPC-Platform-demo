@@ -24,4 +24,4 @@ decrypt:
 	python decrypter.py $(JOB)
 
 clean:
-	rm -rf data/job_*.csv.enc jobs/job_*.key jobs/job_*.py.enc output/job_*.out.enc
+	rm -rf data_encrypted/job_*.csv.enc jobs_encrypted/job_*.key jobs_encrypted/job_*.py.enc output/job_*.out.enc

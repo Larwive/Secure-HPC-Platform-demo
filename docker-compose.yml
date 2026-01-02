@@ -3,8 +3,9 @@ services:
     image: ruby:3.2
     volumes:
       - .:/app
-      - ./jobs:/jobs
-      - ./data:/data
+      - ./data:/data:ro
+      - ./jobs_encrypted:/jobs_encrypted:rw
+      - ./data_encrypted:/data_encrypted:rw
     working_dir: /app
     entrypoint: ["ruby", "bin/submit_job.rb"]
 
@@ -13,9 +14,8 @@ services:
     image: python:3.12
     volumes:
       - ./secure-compute:/secure-compute
-      - ./jobs:/jobs
-      - ./data:/data
-      - ./output:/output
-      - ./processing:/processing
+      - ./jobs_encrypted:/jobs:ro
+      - ./data_encrypted:/data:ro
+      - ./output:/output:rw
     working_dir: /secure-compute
     command: ["python", "worker.py"]
