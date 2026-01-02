@@ -19,4 +19,4 @@ with open(input_file, newline="") as f:
 
 print(f"Processed {len(values)} values.")
 if values:
-    print(f"Mean: {sum(values) / len(values)}")
+    print(f"{sum(values) / len(values)}")

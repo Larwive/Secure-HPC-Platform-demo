@@ -40,4 +40,4 @@ print("\n=== DATA ===")
 print(decrypt_json(data_path, key).decode())
 
 print("\n=== OUTPUT ===")
-print(decrypt_raw(out_path, key).decode())
+print(decrypt_raw(out_path, key).decode(), end="")

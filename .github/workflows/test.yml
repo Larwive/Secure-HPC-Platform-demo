@@ -1,0 +1,60 @@
+name: Test Secure HPC Demo
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test-demo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker images
+        run: docker compose build
+
+      - name: Start platform
+        run: docker compose up -d
+
+      - name: Submit test job
+        run: |
+          mkdir -p data jobs output
+          docker compose run --rm login processing/mean.py data/numbers.csv
+
+      - name: Verify output
+        run: |
+          for i in {1..15}; do
+            OUTPUT_FILE=$(ls output/job_*.out.enc 2>/dev/null || true)
+            if [ -n "$OUTPUT_FILE" ]; then break; fi
+            sleep 1
+          done
+          
+          if [ -z "$OUTPUT_FILE" ]; then
+            echo "Job output not found after waiting."
+            exit 1
+          fi
+          
+          echo "Job output exists: $OUTPUT_FILE"
+
+          # Decrypt output using decrypter.py
+          JOB_ID=$(basename "$OUTPUT_FILE" .out.enc)
+          JOB_ID=${JOB_ID#job_}
+
+          # Compare decrypted output to expected result
+          EXPECTED="200.0"   # mean of numbers.csv
+          ACTUAL=$(python decrypter.py "$JOB_ID" | tail -n 1)
+          if [ "$ACTUAL" != "$EXPECTED" ]; then
+            echo "Decrypted output does not match expected: $ACTUAL vs $EXPECTED"
+            exit 1
+          fi
+          echo "Decrypted output correct: $ACTUAL"
+
+
+      - name: Tear down platform
+        run: docker compose down
