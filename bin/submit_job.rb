@@ -2,49 +2,48 @@
 require 'json'
 require 'fileutils'
 require 'securerandom'
+require 'openssl'
 
-if ARGV.length != 2
-  puts "Usage: submit_job.rb <process.py> <data.csv>"
-  exit 1
-end
+abort "Usage: submit_job.rb <process.py> <data.csv>" unless ARGV.size == 2
 
-process_file = ARGV[0]
-data_file    = ARGV[1]
+process_file, data_file = ARGV
 
-# Allowed processes
-ALLOWED_PROCESSES = ["processing/mean.py"]
+abort "Process not found" unless File.exist?(process_file)
+abort "Data not found" unless File.exist?(data_file)
 
-unless ALLOWED_PROCESSES.include?(process_file)
-  puts "Error: unauthorized process #{process_file}"
-  exit 1
-end
+def encrypt(data, key)
+  cipher = OpenSSL::Cipher.new("aes-256-gcm")
+  cipher.encrypt
+  cipher.key = key
+  iv = SecureRandom.random_bytes(12)
+  cipher.iv = iv
 
-unless File.exist?(process_file)
-  puts "Error: process not found: #{process_file}"
-  exit 1
-end
-
-unless File.exist?("#{data_file}")
-  puts "Error: data file not found: #{data_file}"
-  exit 1
+  encrypted = cipher.update(data) + cipher.final
+  {
+    iv: iv.unpack1("H*"),
+    data: encrypted.unpack1("H*"),
+    tag: cipher.auth_tag.unpack1("H*")
+  }.to_json
 end
 
 FileUtils.mkdir_p("jobs")
 
 job_id = SecureRandom.uuid
-job = {
-  id: job_id,
-  process: process_file,
-  input: data_file,
-  submitted_at: Time.now.to_s
-}
+key = SecureRandom.random_bytes(32)
 
-job_path = "jobs/job_#{job_id}.json"
-File.write(job_path, JSON.pretty_generate(job))
+File.write("jobs/job_#{job_id}.py.enc",
+  encrypt(File.read(process_file), key)
+)
+
+File.write("data/job_#{job_id}.csv.enc",
+  encrypt(File.read(data_file), key)
+)
+
+File.binwrite("jobs/job_#{job_id}.key", key)
 
 puts "[INFO] Job submitted"
-puts "  ID      : #{job_id}"
-puts "  Process : #{process_file}"
-puts "  Data    : #{data_file}"
-puts "  Job file: #{job_path}"
-puts "  Output  : output/job_#{job_id}.out"
+puts "  ID: #{job_id}"
+puts "  Encrypted key: jobs/job_#{job_id}.key"
+puts "  Encrypted process: jobs/job_#{job_id}.py.enc"
+puts "  Encrypted data   : data/job_#{job_id}.csv.enc"
+puts "  Encrypted output : output/job_#{job_id}.out.enc"

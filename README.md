@@ -41,4 +41,4 @@ uv sync
 make up
 make submit PROCESS=processing/mean.py DATA=data/numbers.csv
 ```
-Then you can view the output with `make logs JOB=<id>`.
+Then you can view the decrypted files with `make decrypt JOB=<id>`.

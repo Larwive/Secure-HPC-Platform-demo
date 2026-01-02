@@ -2,7 +2,7 @@ import sys
 import csv
 
 if len(sys.argv) != 2:
-    print("Usage: process_data.py <input_file>")
+    print("Usage: mean.py <input_file>")
     sys.exit(1)
 
 input_file = sys.argv[1]

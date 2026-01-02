@@ -8,6 +8,7 @@ help:
 	@echo "  make logs JOB=<id>"
 
 up:
+	docker compose build
 	docker compose up -d
 
 down:
@@ -18,9 +19,9 @@ submit:
 	@test -n "$(DATA)" || (echo "DATA missing"; exit 1)
 	docker compose run --rm login $(PROCESS) $(DATA)
 
-logs:
+decrypt:
 	@test -n "$(JOB)" || (echo "JOB id missing"; exit 1)
-	cat output/job_$(JOB).out
+	python decrypter.py $(JOB)
 
 clean:
-	rm -rf jobs/*.json output/*.out
+	rm -rf data/job_*.csv.enc jobs/job_*.key jobs/job_*.py.enc output/job_*.out.enc
