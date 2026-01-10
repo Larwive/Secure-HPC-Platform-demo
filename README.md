@@ -50,8 +50,14 @@ Use the makefile to interact with the platform:
 ## Quick Start
 This project uses `uv` for dependency management.
 
+Make sure Docker is installed and running.
+
 ```
+# Install dependencies
 uv sync
+source .venv/bin/activate # Assuming your virtual environment is named .venv
+
+# Start the platform
 make up
 make submit PROCESS=processing/mean.py DATA=data/numbers.csv
 ```
