@@ -1,9 +1,18 @@
 services:
-  login:
+  init:
     image: ruby:3.2
     volumes:
       - .:/app
       - ./data:/data:ro
+      - ./database_enc:/database_enc:rw
+    working_dir: /app
+    entrypoint: ["ruby", "bin/init.rb"]
+
+  login:
+    image: ruby:3.2
+    volumes:
+      - .:/app
+      - ./database_enc:/database_enc:ro
       - ./jobs_encrypted:/jobs_encrypted:rw
       - ./data_encrypted:/data_encrypted:rw
     working_dir: /app

@@ -14,6 +14,9 @@ up:
 down:
 	docker compose down
 
+init:
+	docker compose run --rm init
+
 submit:
 	@test -n "$(PROCESS)" || (echo "PROCESS missing"; exit 1)
 	@test -n "$(DATA)" || (echo "DATA missing"; exit 1)
@@ -24,4 +27,4 @@ decrypt:
 	python decrypter.py $(JOB)
 
 clean:
-	rm -rf data_encrypted/job_*.csv.enc jobs_encrypted/job_*.key jobs_encrypted/job_*.py.enc output/job_*.out.enc
+	rm -rf data_encrypted/job_*.csv.enc jobs_encrypted/job_*.key jobs_encrypted/job_*.py.enc output/job_*.out.enc database_enc/*
