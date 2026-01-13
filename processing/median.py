@@ -1,21 +1,14 @@
 import sys
-import csv
 
-if len(sys.argv) != 2:
-    print("Usage: mean.py <input_file>")
-    sys.exit(1)
+data: bytes
 
-input_file = sys.argv[1]
 values = []
-
-with open(input_file, newline="") as f:
-    reader = csv.reader(f)
-    for row in reader:
-        try:
-            values.append(float(row[0]))
-        except ValueError:
-            print(f"Error: Invalid value '{row[0]}' in input file.")
-            sys.exit(1)
+for value in data.split(b"\n"):
+    try:
+        values.append(float(value))
+    except ValueError:
+        print(f"Error: Invalid value '{value}' in input file.")
+        sys.exit(1)
 
 print(f"Processed {len(values)} values.")
 if values:

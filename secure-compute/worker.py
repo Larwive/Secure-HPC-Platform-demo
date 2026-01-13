@@ -1,7 +1,6 @@
 import time
 import json
 import subprocess
-import tempfile
 import os
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
@@ -27,27 +26,21 @@ while True:
         process_code = decrypt(f"/jobs/job_{job_id}.py.enc", key)
         data = decrypt(f"/data/job_{job_id}.csv.enc", key)
 
-        with tempfile.TemporaryDirectory() as tmp:
-            process_path = f"{tmp}/process.py"
-            data_path    = f"{tmp}/data.csv"
-            output_path  = f"{tmp}/output.txt"
-        
-            # Write decrypted contents
-            with open(process_path, "wb") as f:
-                f.write(process_code)
-            with open(data_path, "wb") as f:
-                f.write(data)
-        
-            # Run the process script exactly like before
+        # Run by passing through stdin
+        try:
             result = subprocess.run(
-                ["python", process_path, data_path],
+                ["python", "decrypt.py"],
+                input=process_code + b"\n---DATA---\n" + data,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 timeout=60
             )
-        
             output = result.stdout  # bytes
             print(f"[SECURE NODE] Job {job_id} output:\n", output.decode())
+        except Exception as e:
+            output = bytes(f"Error running job {job_id}: {e}", "utf-8")
+            print(output)
+    
 
         aes = AESGCM(key)
         iv = b"\x00" * 12
